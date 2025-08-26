@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Job_Portal.Models;
+using Microsoft.AspNetCore.Http;
 
 namespace Job_Portal.Controllers
 {
@@ -18,7 +19,6 @@ namespace Job_Portal.Controllers
             _context = context;
         }
 
-        // GET: Users
         public IActionResult Register()
         {
             return View();
@@ -74,6 +74,13 @@ namespace Job_Portal.Controllers
             ViewBag.Email = email;
             return View();
         }
+
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Clear();   
+            return RedirectToAction("Login");
+        }
+
 
     }
 }
