@@ -47,24 +47,30 @@ namespace Job_Portal.Controllers
         // GET: Jobs/Create
         public IActionResult Create()
         {
-            ViewData["EmployerId"] = new SelectList(_context.Users, "UserId", "UserId");
             return View();
         }
 
-        // POST: Jobs/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("JobId,Title,Description,Location,PostedDate,EmployerId")] Job job)
         {
             if (ModelState.IsValid)
             {
+                var email = HttpContext.Session.GetString("UserEmail");
+                var employer = _context.Users.FirstOrDefault(u => u.Email == email);
+
+                if (employer == null || employer.Role != "Employer")
+                {
+                    return Unauthorized(); 
+                }
+
+                job.EmployerId = employer.UserId;
+                job.PostedDate = DateTime.Now;
+
                 _context.Add(job);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["EmployerId"] = new SelectList(_context.Users, "UserId", "UserId", job.EmployerId);
             return View(job);
         }
 
@@ -81,8 +87,7 @@ namespace Job_Portal.Controllers
             {
                 return NotFound();
             }
-            ViewData["EmployerId"] = new SelectList(_context.Users, "UserId", "UserId", job.EmployerId);
-            return View(job);
+             return View(job);
         }
 
         // POST: Jobs/Edit/5
@@ -117,7 +122,6 @@ namespace Job_Portal.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["EmployerId"] = new SelectList(_context.Users, "UserId", "UserId", job.EmployerId);
             return View(job);
         }
 
