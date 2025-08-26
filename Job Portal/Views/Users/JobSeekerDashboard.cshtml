@@ -1,0 +1,25 @@
+﻿@model IEnumerable<Job_Portal.Models.Job>
+
+<h2>Job Seeker Dashboard</h2>
+
+<table>
+    <tr>
+        <th>Title</th>
+        <th>Location</th>
+        <th>Employer</th>
+        <th></th>
+    </tr>
+    @foreach (var job in Model)
+    {
+        <tr>
+            <td>@job.Title</td>
+            <td>@job.Location</td>
+            <td>@job.Employer.Email</td>
+            <td>
+                <a asp-controller="Jobs" asp-action="Details" asp-route-id="@job.JobId">View</a>
+                <!-- Later: Add Apply button -->
+            </td>
+        </tr>
+    }
+</table>
+

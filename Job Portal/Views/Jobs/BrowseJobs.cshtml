@@ -1,0 +1,37 @@
+﻿@model IEnumerable<Job_Portal.Models.Job>
+
+@{
+    ViewData["Title"] = "Browse Jobs";
+}
+
+<h2>Available Jobs</h2>
+
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Description</th>
+            <th>Location</th>
+            <th>Employer</th>
+            <th>Posted Date</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var job in Model)
+        {
+            <tr>
+                <td>@job.Title</td>
+                <td>@job.Description</td>
+                <td>@job.Location</td>
+                <td>@job.Employer?.Name</td> <!-- assuming User has Name -->
+                <td>@job.PostedDate.ToShortDateString()</td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@job.JobId" class="btn btn-sm btn-info">View</a>
+                    <!-- Later you can add "Apply" button here -->
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+

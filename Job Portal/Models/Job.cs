@@ -19,5 +19,5 @@ public partial class Job
 
     public virtual ICollection<Application> Applications { get; set; } = new List<Application>();
 
-    public virtual User Employer { get; set; } = null!;
+    public virtual User? Employer { get; set; }
 }

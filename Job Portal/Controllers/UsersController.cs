@@ -55,11 +55,42 @@ namespace Job_Portal.Controllers
                 HttpContext.Session.SetString("UserEmail", user.Email);
                 HttpContext.Session.SetString("UserRole", user.Role);
 
-                return RedirectToAction("Dashboard");
+                if (user.Role == "Employer")
+                    return RedirectToAction("EmployerDashboard", "Users");
+                else
+                    return RedirectToAction("JobSeekerDashboard", "Users");
+
             }
 
             ViewBag.Error = "Invalid email or password";
             return View();
+        }
+
+        public IActionResult EmployerDashboard()
+        {
+            var email = HttpContext.Session.GetString("UserEmail");
+            var employer = _context.Users.FirstOrDefault(u => u.Email == email);
+
+            if (employer == null)
+            {
+                return RedirectToAction("Login");
+            }
+
+            var jobs = _context.Jobs
+                .Where(j => j.EmployerId == employer.UserId)
+                .ToList();
+
+            return View(jobs);
+        }
+
+
+        public IActionResult JobSeekerDashboard()
+        {
+            var jobs = _context.Jobs
+                .Include(j => j.Employer)
+                .ToList();
+
+            return View(jobs);
         }
 
 

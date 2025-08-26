@@ -1,0 +1,37 @@
+﻿@model IEnumerable<Job_Portal.Models.Job>
+
+@{
+    ViewData["Title"] = "My Jobs";
+}
+
+<h2>My Jobs</h2>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Post New Job</a>
+</p>
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Location</th>
+            <th>Posted Date</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var job in Model)
+        {
+            <tr>
+                <td>@job.Title</td>
+                <td>@job.Location</td>
+                <td>@job.PostedDate.ToShortDateString()</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@job.JobId" class="btn btn-sm btn-warning">Edit</a>
+                    <a asp-action="Details" asp-route-id="@job.JobId" class="btn btn-sm btn-info">Details</a>
+                    <a asp-action="Delete" asp-route-id="@job.JobId" class="btn btn-sm btn-danger">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

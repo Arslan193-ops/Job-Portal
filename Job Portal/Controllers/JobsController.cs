@@ -28,79 +28,72 @@ namespace Job_Portal.Controllers
         // GET: Jobs/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var job = await _context.Jobs
                 .Include(j => j.Employer)
                 .FirstOrDefaultAsync(m => m.JobId == id);
-            if (job == null)
-            {
-                return NotFound();
-            }
+
+            if (job == null) return NotFound();
 
             return View(job);
         }
 
-        // GET: Jobs/Create
+        // GET: Jobs/Create (Employers only)
         public IActionResult Create()
         {
+            var role = HttpContext.Session.GetString("UserRole");
+            if (role != "Employer") return Unauthorized();
+
             return View();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("JobId,Title,Description,Location,PostedDate,EmployerId")] Job job)
+        public async Task<IActionResult> Create([Bind("Title,Description,Location")] Job job)
         {
-            if (ModelState.IsValid)
-            {
-                var email = HttpContext.Session.GetString("UserEmail");
-                var employer = _context.Users.FirstOrDefault(u => u.Email == email);
+            if (!ModelState.IsValid) return View(job);
 
-                if (employer == null || employer.Role != "Employer")
-                {
-                    return Unauthorized(); 
-                }
+            var email = HttpContext.Session.GetString("UserEmail");
+            var employer = _context.Users.FirstOrDefault(u => u.Email == email);
 
-                job.EmployerId = employer.UserId;
-                job.PostedDate = DateTime.Now;
+            if (employer == null || employer.Role != "Employer") return Unauthorized();
 
-                _context.Add(job);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(job);
+            job.EmployerId = employer.UserId;
+            job.PostedDate = DateTime.Now;
+
+            _context.Add(job);
+            await _context.SaveChangesAsync();
+
+            // Redirect employer to their jobs, not global Index
+            return RedirectToAction(nameof(MyJobs));
         }
 
         // GET: Jobs/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var job = await _context.Jobs.FindAsync(id);
-            if (job == null)
-            {
-                return NotFound();
-            }
-             return View(job);
+            if (job == null) return NotFound();
+
+            // Security: Only employer who posted it can edit
+            var email = HttpContext.Session.GetString("UserEmail");
+            var employer = _context.Users.FirstOrDefault(u => u.Email == email);
+            if (employer == null || job.EmployerId != employer.UserId) return Unauthorized();
+
+            return View(job);
         }
 
-        // POST: Jobs/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("JobId,Title,Description,Location,PostedDate,EmployerId")] Job job)
         {
-            if (id != job.JobId)
-            {
-                return NotFound();
-            }
+            if (id != job.JobId) return NotFound();
+
+            var email = HttpContext.Session.GetString("UserEmail");
+            var employer = _context.Users.FirstOrDefault(u => u.Email == email);
+            if (employer == null || job.EmployerId != employer.UserId) return Unauthorized();
 
             if (ModelState.IsValid)
             {
@@ -111,16 +104,10 @@ namespace Job_Portal.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!JobExists(job.JobId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    if (!JobExists(job.JobId)) return NotFound();
+                    else throw;
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(MyJobs));
             }
             return View(job);
         }
@@ -128,40 +115,71 @@ namespace Job_Portal.Controllers
         // GET: Jobs/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var job = await _context.Jobs
                 .Include(j => j.Employer)
                 .FirstOrDefaultAsync(m => m.JobId == id);
-            if (job == null)
-            {
-                return NotFound();
-            }
+
+            if (job == null) return NotFound();
+
+            var email = HttpContext.Session.GetString("UserEmail");
+            var employer = _context.Users.FirstOrDefault(u => u.Email == email);
+            if (employer == null || job.EmployerId != employer.UserId) return Unauthorized();
 
             return View(job);
         }
 
-        // POST: Jobs/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var job = await _context.Jobs.FindAsync(id);
+
             if (job != null)
             {
+                var email = HttpContext.Session.GetString("UserEmail");
+                var employer = _context.Users.FirstOrDefault(u => u.Email == email);
+                if (employer == null || job.EmployerId != employer.UserId) return Unauthorized();
+
                 _context.Jobs.Remove(job);
+                await _context.SaveChangesAsync();
             }
 
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(MyJobs));
         }
 
         private bool JobExists(int id)
         {
             return _context.Jobs.Any(e => e.JobId == id);
+        }
+
+        // Employer’s jobs
+        public IActionResult MyJobs()
+        {
+            var email = HttpContext.Session.GetString("UserEmail");
+            var employer = _context.Users.FirstOrDefault(u => u.Email == email);
+
+            if (employer == null || employer.Role != "Employer") return Unauthorized();
+
+            var jobs = _context.Jobs
+                .Where(j => j.EmployerId == employer.UserId)
+                .ToList();
+
+            return View(jobs);
+        }
+
+        // Jobseeker: browse all jobs
+        public IActionResult BrowseJobs()
+        {
+            var role = HttpContext.Session.GetString("UserRole");
+            if (role != "Jobseeker") return Unauthorized();
+
+            var jobs = _context.Jobs
+                .Include(j => j.Employer) // so seekers can see who posted
+                .ToList();
+
+            return View(jobs);
         }
     }
 }
