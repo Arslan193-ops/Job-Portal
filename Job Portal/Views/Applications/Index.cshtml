@@ -1,47 +1,51 @@
 ﻿@model IEnumerable<Job_Portal.Models.Application>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Applications";
 }
 
-<h1>Index</h1>
-
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.AppliedDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Job)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.User)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.AppliedDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Job.JobId)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.User.UserId)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.ApplicationId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.ApplicationId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.ApplicationId">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h4 class="mb-0"><i class="bi bi-file-earmark-text me-2"></i>Applications</h4>
+            <a asp-action="Create" class="btn btn-light btn-sm">
+                <i class="bi bi-plus-circle me-1"></i> New Application
+            </a>
+        </div>
+        <div class="card-body">
+            <table class="table table-striped table-hover align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th><i class="bi bi-briefcase me-1"></i> Job Title</th>
+                        <th><i class="bi bi-building me-1"></i> Employer</th>
+                        <th><i class="bi bi-person me-1"></i> Applicant</th>
+                        <th><i class="bi bi-calendar-date me-1"></i> Applied Date</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var application in Model)
+                    {
+                        <tr>
+                            <td>@application.Job?.Title</td>
+                            <td>@application.Job?.Employer?.Name</td>
+                            <td>@application.User?.Name</td>
+                            <td>@application.AppliedDate.ToString("MMM dd, yyyy")</td>
+                            <td class="text-center">
+                                <a asp-action="Details" asp-route-id="@application.ApplicationId" class="btn btn-sm btn-info me-1">
+                                    <i class="bi bi-eye"></i> Details
+                                </a>
+                                <a asp-action="Edit" asp-route-id="@application.ApplicationId" class="btn btn-sm btn-warning me-1">
+                                    <i class="bi bi-pencil-square"></i> Edit
+                                </a>
+                                <a asp-action="Delete" asp-route-id="@application.ApplicationId" class="btn btn-sm btn-danger">
+                                    <i class="bi bi-trash"></i> Delete
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

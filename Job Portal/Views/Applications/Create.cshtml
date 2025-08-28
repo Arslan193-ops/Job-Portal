@@ -1,41 +1,48 @@
 ﻿@model Job_Portal.Models.Application
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Apply for Job";
 }
 
-<h1>Create</h1>
+<div class="container mt-4">
+    <div class="card shadow-lg border-0 rounded-3">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">Apply for @ViewData["JobTitle"]</h4>
+            <i class="bi bi-briefcase-fill"></i>
+        </div>
+        <div class="card-body p-4">
+            <form asp-action="Create" enctype="multipart/form-data">
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-<h4>Application</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="JobId" class="control-label"></label>
-                <select asp-for="JobId" class ="form-control" asp-items="ViewBag.JobId"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="UserId" class="control-label"></label>
-                <select asp-for="UserId" class ="form-control" asp-items="ViewBag.UserId"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="AppliedDate" class="control-label"></label>
-                <input asp-for="AppliedDate" class="form-control" />
-                <span asp-validation-for="AppliedDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+                <!-- Hidden JobId -->
+                <input type="hidden" asp-for="JobId" value="@ViewData["JobId"]" />
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Job</label>
+                    <input class="form-control" value="@ViewData["JobTitle"]" readonly />
+                </div>
+
+                <div class="mb-3">
+                    <label for="CvFile" class="form-label fw-bold">Upload CV</label>
+                    <input type="file" name="CvFile" class="form-control" accept=".pdf,.doc,.docx" required />
+                    <div class="form-text">Accepted formats: PDF, DOC, DOCX</div>
+                </div>
+
+                <div class="d-flex justify-content-end gap-2 mt-4">
+                    <button type="submit" class="btn btn-success px-4">
+                        <i class="bi bi-check-circle me-1"></i> Apply
+                    </button>
+                    <a asp-controller="Users" asp-action="JobSeekerDashboard" class="btn btn-outline-secondary px-4">
+                        <i class="bi bi-x-circle me-1"></i> Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

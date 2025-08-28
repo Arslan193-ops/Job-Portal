@@ -1,54 +1,58 @@
 ﻿@model Job_Portal.Models.Job
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Edit Job";
 }
 
-<h1>Edit</h1>
+<div class="container mt-4">
+    <div class="card shadow-lg border-0 rounded-3">
+        <div class="card-header bg-primary text-white">
+            <h3 class="mb-0">Edit Job</h3>
+        </div>
+        <div class="card-body">
+            <form asp-action="Edit">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                <input type="hidden" asp-for="JobId" />
 
-<h4>Job</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="JobId" />
-            <div class="form-group">
-                <label asp-for="Title" class="control-label"></label>
-                <input asp-for="Title" class="form-control" />
-                <span asp-validation-for="Title" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Description" class="control-label"></label>
-                <input asp-for="Description" class="form-control" />
-                <span asp-validation-for="Description" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Location" class="control-label"></label>
-                <input asp-for="Location" class="form-control" />
-                <span asp-validation-for="Location" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="PostedDate" class="control-label"></label>
-                <input asp-for="PostedDate" class="form-control" />
-                <span asp-validation-for="PostedDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="EmployerId" class="control-label"></label>
-                <select asp-for="EmployerId" class="form-control" asp-items="ViewBag.EmployerId"></select>
-                <span asp-validation-for="EmployerId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+                <div class="form-group mb-3">
+                    <label asp-for="Title" class="form-label fw-bold"></label>
+                    <input asp-for="Title" class="form-control" placeholder="Enter job title" />
+                    <span asp-validation-for="Title" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="Description" class="form-label fw-bold"></label>
+                    <textarea asp-for="Description" class="form-control" rows="4" placeholder="Enter job description"></textarea>
+                    <span asp-validation-for="Description" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="Location" class="form-label fw-bold"></label>
+                    <input asp-for="Location" class="form-control" placeholder="Enter job location" />
+                    <span asp-validation-for="Location" class="text-danger"></span>
+                </div>
+
+                <!-- PostedDate kept hidden so it's not editable -->
+                <input type="hidden" asp-for="PostedDate" />
+
+                <!-- EmployerId hidden -->
+                <input type="hidden" asp-for="EmployerId" />
+
+                <div class="d-flex justify-content-start">
+                    <button type="submit" class="btn btn-success me-2">
+                        <i class="bi bi-check-circle"></i> Save Changes
+                    </button>
+                    <a asp-controller="Users" asp-action="EmployerDashboard" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left"></i> Back to Dashboard
+                    </a>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

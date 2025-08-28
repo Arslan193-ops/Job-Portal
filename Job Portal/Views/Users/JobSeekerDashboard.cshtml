@@ -1,25 +1,69 @@
-﻿@model IEnumerable<Job_Portal.Models.Job>
+﻿@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
 
-<h2>Job Seeker Dashboard</h2>
+@model IEnumerable<Job_Portal.Models.Job>
 
-<table>
-    <tr>
-        <th>Title</th>
-        <th>Location</th>
-        <th>Employer</th>
-        <th></th>
-    </tr>
-    @foreach (var job in Model)
-    {
-        <tr>
-            <td>@job.Title</td>
-            <td>@job.Location</td>
-            <td>@job.Employer.Email</td>
-            <td>
-                <a asp-controller="Jobs" asp-action="Details" asp-route-id="@job.JobId">View</a>
-                <!-- Later: Add Apply button -->
-            </td>
-        </tr>
+@{
+    ViewData["Title"] = "All Jobs";
+    var userEmail = HttpContextAccessor.HttpContext?.Session?.GetString("UserEmail");
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="fw-bold text-primary">Available Jobs</h2>
+        <a asp-action="Index" asp-controller="Applications" class="btn btn-gradient-primary rounded-pill px-4">Applied Jobs</a>
+    </div>
+
+    <div class="card shadow-lg rounded-4">
+        <div class="card-body p-0">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-primary">
+                    <tr>
+                        <th scope="col">Title</th>
+                        <th scope="col">Description</th>
+                        <th scope="col">Location</th>
+                        <th scope="col" class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var job in Model)
+                    {
+                        var alreadyApplied = !string.IsNullOrEmpty(userEmail) && job.Applications.Any(a => a.User.Email == userEmail);
+
+                        <tr>
+                            <td class="fw-semibold">@job.Title</td>
+                            <td>@job.Description</td>
+                            <td>@job.Location</td>
+                            <td class="text-center">
+                                <a asp-controller="Jobs" asp-action="Details" asp-route-id="@job.JobId" class="btn btn-sm btn-info rounded-pill px-3 me-1">View</a>
+
+                                @if (alreadyApplied)
+                                {
+                                    <span class="badge bg-success rounded-pill px-3 py-2">Applied</span>
+                                }
+                                else
+                                {
+                                    <a asp-controller="Applications" asp-action="Create" asp-route-jobId="@job.JobId" class="btn btn-sm btn-primary rounded-pill px-3">Apply</a>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<style>
+    .btn-gradient-primary {
+        background: linear-gradient(45deg, #007bff, #00c6ff);
+        color: white;
+        border: none;
+        transition: all 0.3s ease-in-out;
     }
-</table>
 
+        .btn-gradient-primary:hover {
+            background: linear-gradient(45deg, #0056b3, #0096c7);
+            transform: translateY(-2px);
+        }
+</style>

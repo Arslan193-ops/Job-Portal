@@ -4,42 +4,76 @@
     ViewData["Title"] = "Register";
 }
 
-<h1>Register</h1>
+<div class="d-flex justify-content-center align-items-center vh-100 bg-light">
+    <div class="card shadow-lg p-4 rounded-4" style="width: 420px;">
+        <div class="text-center mb-4">
+            <h2 class="fw-bold text-success">Create Account</h2>
+            <p class="text-muted">Join us and explore opportunities</p>
+        </div>
 
-<h4>User</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
         <form asp-action="Register">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Name" class="form-label fw-semibold"></label>
+                <input asp-for="Name" class="form-control rounded-pill p-2" placeholder="Enter your name" />
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Email" class="control-label"></label>
-                <input asp-for="Email" class="form-control" />
+
+            <div class="form-group mb-3">
+                <label asp-for="Email" class="form-label fw-semibold"></label>
+                <input asp-for="Email" class="form-control rounded-pill p-2" placeholder="Enter your email" />
                 <span asp-validation-for="Email" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Password" class="control-label"></label>
-                <input asp-for="Password" class="form-control" />
+
+            <div class="form-group mb-3">
+                <label asp-for="Password" class="form-label fw-semibold"></label>
+                <input asp-for="Password" type="password" class="form-control rounded-pill p-2" placeholder="Create a password" />
                 <span asp-validation-for="Password" class="text-danger"></span>
             </div>
-            <label asp-for="Role" class="control-label">Role</label>
-            <select asp-for="Role" class="form-control">
-                <option value="JobSeeker">Job Seeker</option>
-                <option value="Employer">Employer</option>
-            </select><br />
-            <div class="form-group">
-                <input type="submit" value="Register" class="btn btn-primary" />
+
+            <div class="form-group mb-4">
+                <label asp-for="Role" class="form-label fw-semibold">Role</label>
+                <select asp-for="Role" class="form-select rounded-pill p-2">
+                    <option value="JobSeeker">Job Seeker</option>
+                    <option value="Employer">Employer</option>
+                </select>
+                <span asp-validation-for="Role" class="text-danger"></span>
+            </div>
+
+            <div class="d-grid mb-3">
+                <input type="submit" value="Register" class="btn btn-gradient-success rounded-pill py-2 fw-semibold" />
+            </div>
+
+            <div class="text-center">
+                <span class="text-muted">Already have an account?</span>
+                <a asp-action="Login" class="fw-semibold text-success"> Login</a>
             </div>
         </form>
     </div>
 </div>
 
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }
+
+<style>
+    body {
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .btn-gradient-success {
+        background: linear-gradient(45deg, #28a745, #20c997);
+        color: white;
+        border: none;
+        transition: all 0.3s ease-in-out;
+    }
+
+        .btn-gradient-success:hover {
+            background: linear-gradient(45deg, #218838, #17a589);
+            transform: translateY(-2px);
+        }
+</style>

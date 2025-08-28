@@ -1,44 +1,65 @@
 ﻿@model Job_Portal.Models.Application
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Edit Application";
+    var userRole = Context.Session.GetString("UserRole"); // coming from session
 }
 
-<h1>Edit</h1>
+<div class="container mt-4">
+    <div class="card shadow p-4">
+        <h2 class="mb-3 text-primary"><i class="bi bi-pencil-square"></i> Edit Application</h2>
+        <hr />
+        <div class="row">
+            <div class="col-md-8">
+                <form asp-action="Edit">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                    <input type="hidden" asp-for="ApplicationId" />
 
-<h4>Application</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="ApplicationId" />
-            <div class="form-group">
-                <label asp-for="JobId" class="control-label"></label>
-                <select asp-for="JobId" class="form-control" asp-items="ViewBag.JobId"></select>
-                <span asp-validation-for="JobId" class="text-danger"></span>
+                    <div class="mb-3">
+                        <label asp-for="JobId" class="form-label">Job Title</label>
+                        <select asp-for="JobId" class="form-select" asp-items="ViewBag.JobId"></select>
+                        <span asp-validation-for="JobId" class="text-danger"></span>
+                    </div>
+
+                    @if (userRole == "Employer")
+                    {
+                        <div class="mb-3">
+                            <label asp-for="UserId" class="form-label">Applicant</label>
+                            <select asp-for="UserId" class="form-select" asp-items="ViewBag.UserId"></select>
+                            <span asp-validation-for="UserId" class="text-danger"></span>
+                        </div>
+                    }
+                    else if (userRole == "JobSeeker")
+                    {
+                        <input type="hidden" asp-for="UserId" />
+                        <div class="mb-3">
+                            <label asp-for="UserId" class="form-label">Applicant</label>
+                            <input class="form-control" value="@User.Identity?.Name" readonly />
+                        </div>
+                    }
+
+                    <div class="mb-3">
+                        <label asp-for="AppliedDate" class="form-label">Applied On</label>
+                        <input asp-for="AppliedDate" type="date" class="form-control" />
+                        <span asp-validation-for="AppliedDate" class="text-danger"></span>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <button type="submit" class="btn btn-success">
+                            <i class="bi bi-check-circle"></i> Save Changes
+                        </button>
+                        <a asp-action="Index" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left-circle"></i> Back to List
+                        </a>
+                    </div>
+                </form>
             </div>
-            <div class="form-group">
-                <label asp-for="UserId" class="control-label"></label>
-                <select asp-for="UserId" class="form-control" asp-items="ViewBag.UserId"></select>
-                <span asp-validation-for="UserId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="AppliedDate" class="control-label"></label>
-                <input asp-for="AppliedDate" class="form-control" />
-                <span asp-validation-for="AppliedDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

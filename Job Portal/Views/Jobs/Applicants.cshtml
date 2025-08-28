@@ -1,0 +1,75 @@
+﻿@model Job_Portal.Models.Job
+@{
+    ViewData["Title"] = "Applicants for " + Model.Title;
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="fw-bold text-primary">Applicants for @Model.Title</h2>
+        <a asp-controller="Users" asp-action="EmployerDashboard" class="btn btn-gradient-secondary rounded-pill px-4">⬅ Back to Dashboard</a>
+    </div>
+    <hr />
+
+    @if (Model.Applications != null && Model.Applications.Any())
+    {
+        <div class="card shadow-lg rounded-4">
+            <div class="card-body p-0">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-primary">
+                        <tr>
+                            <th>Applicant Name</th>
+                            <th>Email</th>
+                            <th>Applied Date</th>
+                            <th>CV</th>
+                            <th class="text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var app in Model.Applications)
+                        {
+                            <tr>
+                                <td class="fw-semibold">@app.User?.Name</td>
+                                <td>@app.User?.Email</td>
+                                <td>@app.AppliedDate.ToString("MMM dd, yyyy")</td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(app.CvFilePath))
+                                    {
+                                        <a href="@app.CvFilePath" target="_blank" class="btn btn-sm btn-outline-primary rounded-pill px-3">
+                                            📄 View CV
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">No CV</span>
+                                    }
+                                </td>
+                                <td class="text-center">
+                                    <a asp-controller="Applications" asp-action="Details" asp-route-id="@app.ApplicationId"
+                                       class="btn btn-sm btn-info rounded-pill px-3">Details</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+    else
+    {
+        <p class="text-muted fst-italic">No applicants yet for this job.</p>
+    }
+</div>
+
+<style>
+    .btn-gradient-secondary {
+        background: linear-gradient(45deg, #6c757d, #adb5bd);
+        color: white;
+        border: none;
+        transition: all 0.3s ease-in-out;
+    }
+
+        .btn-gradient-secondary:hover {
+            background: linear-gradient(45deg, #495057, #868e96);
+            transform: translateY(-2px);
+        }
+</style>

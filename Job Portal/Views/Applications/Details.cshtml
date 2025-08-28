@@ -1,36 +1,52 @@
 ﻿@model Job_Portal.Models.Application
-
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Application Details";
+    var role = Context.Session.GetString("UserRole"); // from session
 }
 
-<h1>Details</h1>
+<h1>Application Details</h1>
 
-<div>
-    <h4>Application</h4>
-    <hr />
+<div class="card shadow-sm p-4 mb-4">
+    <h4 class="mb-3">Application Information</h4>
     <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.AppliedDate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.AppliedDate)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Job)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Job.JobId)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.User)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.User.UserId)
+        <dt class="col-sm-3">Applied Date</dt>
+        <dd class="col-sm-9">@Model.AppliedDate.ToString("MMM dd, yyyy")</dd>
+
+        <dt class="col-sm-3">Job Title</dt>
+        <dd class="col-sm-9">@Model.Job?.Title</dd>
+
+        <dt class="col-sm-3">Employer</dt>
+        <dd class="col-sm-9">@Model.Job?.Employer?.Name</dd>
+
+        <dt class="col-sm-3">Applicant Name</dt>
+        <dd class="col-sm-9">@Model.User?.Name</dd>
+
+        <dt class="col-sm-3">Applicant Email</dt>
+        <dd class="col-sm-9">@Model.User?.Email</dd>
+
+        <dt class="col-sm-3">CV</dt>
+        <dd class="col-sm-9">
+            @if (!string.IsNullOrEmpty(Model.CvFilePath))
+            {
+                <a href="@Model.CvFilePath" target="_blank" class="btn btn-outline-primary">
+                    📄 Download CV
+                </a>
+            }
+            else
+            {
+                <span class="text-muted">No CV uploaded</span>
+            }
         </dd>
     </dl>
 </div>
+
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.ApplicationId">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    @if (role == "Employer")
+    {
+        <a asp-controller="Users" asp-action="EmployerDashboard" class="btn btn-secondary">⬅ Back to Employer Dashboard</a>
+    }
+    else if (role == "JobSeeker")
+    {
+        <a asp-controller="Users" asp-action="JobSeekerDashboard" class="btn btn-secondary">⬅ Back to Job Seeker Dashboard</a>
+    }
 </div>

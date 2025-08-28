@@ -4,34 +4,52 @@
     ViewData["Title"] = "Post New Job";
 }
 
-<h2>Post New Job</h2>
+<div class="card shadow-lg p-4 rounded-3">
+    <h2 class="mb-4 text-primary fw-bold">Post New Job</h2>
 
-<form asp-action="Create" method="post">
-    <div asp-validation-summary="All" class="text-danger"></div>
+    <form asp-action="Create" method="post">
+        <div asp-validation-summary="All" class="text-danger mb-3"></div>
 
-    <div class="form-group">
-        <label asp-for="Title"></label>
-        <input asp-for="Title" class="form-control" />
-        <span asp-validation-for="Title" class="text-danger"></span>
-    </div>
+        <div class="mb-3">
+            <label asp-for="Title" class="form-label fw-semibold"></label>
+            <input asp-for="Title" class="form-control" placeholder="Enter job title" />
+            <span asp-validation-for="Title" class="text-danger"></span>
+        </div>
 
-    <div class="form-group">
-        <label asp-for="Description"></label>
-        <textarea asp-for="Description" class="form-control"></textarea>
-        <span asp-validation-for="Description" class="text-danger"></span>
-    </div>
+        <div class="mb-3">
+            <label asp-for="Description" class="form-label fw-semibold"></label>
+            <textarea asp-for="Description" class="form-control" rows="4" placeholder="Enter job description"></textarea>
+            <span asp-validation-for="Description" class="text-danger"></span>
+        </div>
 
-    <div class="form-group">
-        <label asp-for="Location"></label>
-        <input asp-for="Location" class="form-control" />
-        <span asp-validation-for="Location" class="text-danger"></span>
-    </div>
+        <div class="mb-3">
+            <label asp-for="Location" class="form-label fw-semibold"></label>
+            <input asp-for="Location" class="form-control" placeholder="Enter job location" />
+            <span asp-validation-for="Location" class="text-danger"></span>
+        </div>
 
-    <!-- No PostedDate or EmployerId input -->
-
-    <button type="submit" class="btn btn-primary mt-2">Create Job</button>
-</form>
+        <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-gradient-primary">Create Job</button>
+            <a asp-action="EmployerDashboard" class="btn btn-outline-secondary">Back to Dashboard</a>
+        </div>
+    </form>
+</div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }
+
+<style>
+    .btn-gradient-primary {
+        background: linear-gradient(45deg, #007bff, #00c6ff);
+        border: none;
+        color: white;
+        font-weight: 600;
+        transition: 0.3s ease;
+    }
+
+        .btn-gradient-primary:hover {
+            background: linear-gradient(45deg, #0056b3, #009acd);
+            transform: scale(1.05);
+        }
+</style>

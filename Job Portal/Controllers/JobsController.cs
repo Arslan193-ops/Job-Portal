@@ -21,9 +21,18 @@ namespace Job_Portal.Controllers
         // GET: Jobs
         public async Task<IActionResult> Index()
         {
-            var jobPortalContext = _context.Jobs.Include(j => j.Employer);
+            var jobPortalContext = _context.Jobs
+                .Include(j => j.Employer)
+                .Include(j => j.Applications)      // load applications
+                    .ThenInclude(a => a.User);     // load the applicant user
+            foreach (var job in jobPortalContext)
+            {
+                Console.WriteLine($"{job.Title} has {job.Applications.Count} applications");
+            }
             return View(await jobPortalContext.ToListAsync());
         }
+
+
 
         // GET: Jobs/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -31,6 +40,8 @@ namespace Job_Portal.Controllers
             if (id == null) return NotFound();
 
             var job = await _context.Jobs
+                .Include(j => j.Applications)
+                    .ThenInclude(a => a.User)   
                 .Include(j => j.Employer)
                 .FirstOrDefaultAsync(m => m.JobId == id);
 
@@ -38,6 +49,7 @@ namespace Job_Portal.Controllers
 
             return View(job);
         }
+
 
         // GET: Jobs/Create (Employers only)
         public IActionResult Create()
@@ -66,7 +78,7 @@ namespace Job_Portal.Controllers
             await _context.SaveChangesAsync();
 
             // Redirect employer to their jobs, not global Index
-            return RedirectToAction(nameof(MyJobs));
+            return RedirectToAction("EmployerDashboard","Users");
         }
 
         // GET: Jobs/Edit/5
@@ -87,18 +99,24 @@ namespace Job_Portal.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("JobId,Title,Description,Location,PostedDate,EmployerId")] Job job)
+        public async Task<IActionResult> Edit(int id, [Bind("JobId,Title,Description,Location")] Job job)
         {
             if (id != job.JobId) return NotFound();
 
             var email = HttpContext.Session.GetString("UserEmail");
             var employer = _context.Users.FirstOrDefault(u => u.Email == email);
-            if (employer == null || job.EmployerId != employer.UserId) return Unauthorized();
+            if (employer == null) return Unauthorized();
+
+            var existingJob = await _context.Jobs.AsNoTracking().FirstOrDefaultAsync(j => j.JobId == id);
+            if (existingJob == null || existingJob.EmployerId != employer.UserId) return Unauthorized();
 
             if (ModelState.IsValid)
             {
                 try
                 {
+                    job.EmployerId = employer.UserId;
+                    job.PostedDate = existingJob.PostedDate;
+
                     _context.Update(job);
                     await _context.SaveChangesAsync();
                 }
@@ -111,6 +129,7 @@ namespace Job_Portal.Controllers
             }
             return View(job);
         }
+
 
         // GET: Jobs/Delete/5
         public async Task<IActionResult> Delete(int? id)
@@ -170,16 +189,39 @@ namespace Job_Portal.Controllers
         }
 
         // Jobseeker: browse all jobs
-        public IActionResult BrowseJobs()
+        //public IActionResult BrowseJobs()
+        //{
+        //    var role = HttpContext.Session.GetString("UserRole");
+        //    if (role != "Jobseeker") return Unauthorized();
+
+        //    var jobs = _context.Jobs
+        //        .Include(j => j.Employer) // so seekers can see who posted
+        //        .ToList();
+
+        //    return View(jobs);
+        //}
+
+        public async Task<IActionResult> Applicants(int jobId)
         {
-            var role = HttpContext.Session.GetString("UserRole");
-            if (role != "Jobseeker") return Unauthorized();
+            // Get current employer from session
+            var email = HttpContext.Session.GetString("UserEmail");
+            var employer = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
 
-            var jobs = _context.Jobs
-                .Include(j => j.Employer) // so seekers can see who posted
-                .ToList();
+            if (employer == null || employer.Role != "Employer")
+                return Unauthorized();
 
-            return View(jobs);
+            // Get job with applications and applicants
+            var job = await _context.Jobs
+                .Include(j => j.Applications)
+                    .ThenInclude(a => a.User) // applicant info
+                .FirstOrDefaultAsync(j => j.JobId == jobId && j.EmployerId == employer.UserId);
+
+            if (job == null)
+                return NotFound();
+
+            return View(job);
         }
+
+
     }
 }

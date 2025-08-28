@@ -11,6 +11,8 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<JobPortalContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("dbcs")));
 
+builder.Services.AddSingleton<IHttpContextAccessor,HttpContextAccessor>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -20,6 +22,24 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+
+app.Use(async (context, next) =>
+{
+    // Prevent caching for all responses
+    app.Use(async (context, next) =>
+    {
+        // Prevent caching for all responses
+        context.Response.Headers.CacheControl = "no-cache, no-store, must-revalidate";
+        context.Response.Headers.Pragma = "no-cache";
+        context.Response.Headers.Expires = "0";
+
+        await next.Invoke();
+    });
+    context.Response.Headers.Pragma = "no-cache";
+    context.Response.Headers.Expires = "0";
+
+    await next.Invoke();
+});
 
 app.UseSession();
 app.UseHttpsRedirection();

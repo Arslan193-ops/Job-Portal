@@ -13,6 +13,7 @@ public partial class Application
 
     public DateTime AppliedDate { get; set; }
 
+    public string? CvFilePath { get; set; }
     public virtual Job Job { get; set; } = null!;
 
     public virtual User User { get; set; } = null!;

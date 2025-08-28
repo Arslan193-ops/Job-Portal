@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Browse Jobs";
+    var userRole = Context.Session.GetString("UserRole"); // get role from session
 }
 
 <h2>Available Jobs</h2>
@@ -24,14 +25,20 @@
                 <td>@job.Title</td>
                 <td>@job.Description</td>
                 <td>@job.Location</td>
-                <td>@job.Employer?.Name</td> <!-- assuming User has Name -->
+                <td>@job.Employer?.Name</td>
                 <td>@job.PostedDate.ToShortDateString()</td>
                 <td>
-                    <a asp-action="Details" asp-route-id="@job.JobId" class="btn btn-sm btn-info">View</a>
-                    <!-- Later you can add "Apply" button here -->
+                    <a asp-action="Details" asp-route-id="@job.JobId" 
+                       class="btn btn-sm btn-info">View</a>
+
+                    @if (userRole == "JobSeeker")  
+                    {
+                        <a asp-controller="Applications" asp-action="Create" 
+                           asp-route-jobId="@job.JobId"
+                           class="btn btn-sm btn-success">Apply</a>
+                    }
                 </td>
             </tr>
         }
     </tbody>
 </table>
-

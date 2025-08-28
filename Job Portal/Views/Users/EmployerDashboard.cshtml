@@ -1,31 +1,57 @@
 ﻿@model IEnumerable<Job_Portal.Models.Job>
 
-<h2>Employer Dashboard</h2>
+@{
+    ViewData["Title"] = "My Jobs";
+}
 
-<p>
-    <a asp-controller="Jobs" asp-action="Create">Post a New Job</a>
-</p>
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="fw-bold text-primary">My Jobs</h2>
+        <a asp-controller="Jobs" asp-action="Create" class="btn btn-gradient-primary rounded-pill px-4">+ Post New Job</a>
+    </div>
 
-<table>
-    <tr>
-        <th>Title</th>
-        <th>Location</th>
-        <th>Posted Date</th>
-        <th></th>
-    </tr>
-    @foreach (var job in Model)
-    {
-        <tr>
-            <td>@job.Title</td>
-            <td>@job.Location</td>
-            <td>@job.PostedDate</td>
-            <td>
-                <a asp-controller="Jobs" asp-action="Edit" asp-route-id="@job.JobId">Edit</a> |
-                <a asp-controller="Jobs" asp-action="Delete" asp-route-id="@job.JobId">Delete</a>
-            </td>
-        </tr>
+    <div class="card shadow-lg rounded-4">
+        <div class="card-body p-0">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-primary">
+                    <tr>
+                        <th scope="col">Title</th>
+                        <th scope="col">Location</th>
+                        <th scope="col">Posted Date</th>
+                        <th scope="col" class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var job in Model)
+                    {
+                        <tr>
+                            <td class="fw-semibold">@job.Title</td>
+                            <td>@job.Location</td>
+                            <td>@job.PostedDate.ToShortDateString()</td>
+                            <td class="text-center">
+                                <a asp-controller="Jobs" asp-action="Edit" asp-route-id="@job.JobId" class="btn btn-sm btn-warning rounded-pill px-3 me-1">Edit</a>
+                                <a asp-controller="Jobs" asp-action="Details" asp-route-id="@job.JobId" class="btn btn-sm btn-info rounded-pill px-3 me-1">Details</a>
+                                <a asp-controller="Jobs" asp-action="Delete" asp-route-id="@job.JobId" class="btn btn-sm btn-danger rounded-pill px-3 me-1">Delete</a>
+                                <a asp-controller="Jobs" asp-action="Applicants" asp-route-jobId="@job.JobId" class="btn btn-sm btn-success rounded-pill px-3">View Applicants</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<style>
+    .btn-gradient-primary {
+        background: linear-gradient(45deg, #007bff, #00c6ff);
+        color: white;
+        border: none;
+        transition: all 0.3s ease-in-out;
     }
-</table>
 
-<a asp-controller="Jobs" asp-action="MyJobs">My Posted Jobs</a>
-
+        .btn-gradient-primary:hover {
+            background: linear-gradient(45deg, #0056b3, #0096c7);
+            transform: translateY(-2px);
+        }
+</style>
