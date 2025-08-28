@@ -58,11 +58,23 @@
     <header>
         <nav class="navbar navbar-expand-sm navbar-dark shadow mb-3">
             <div class="container-fluid">
-                <a class="navbar-brand fw-bold" asp-controller="Home" asp-action="Index">Job_Portal</a>
+                @if(user != null && user.Role == "Employer")
+                {
+                <a class="navbar-brand fw-bold" asp-controller="Users" asp-action="EmployerDashboard">Job_Portal</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
                         aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
-                </button>
+                    </button>
+               
+                }
+                else if (user != null && user.Role == "JobSeeker")
+                {
+                    <a class="navbar-brand fw-bold" asp-controller="Users" asp-action="JobSeekerDashboard">Job_Portal</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
+                        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                    </button> 
+                }
 
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
@@ -83,7 +95,7 @@
                                 <a class="nav-link" asp-controller="Jobs" asp-action="Create">Post Job</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" asp-controller="Jobs" asp-action="MyJobs">My Jobs</a>
+                                <a class="nav-link" asp-controller="Users" asp-action="EmployerDashboard">My Jobs</a>
                             </li>
                         }
 
@@ -94,7 +106,7 @@
                                 <a class="nav-link" asp-controller="Users" asp-action="JobSeekerDashboard">Dashboard</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" asp-controller="Jobs" asp-action="BrowseJobs">Browse Jobs</a>
+                                <a class="nav-link" asp-controller="Users" asp-action="JobSeekerDashboard">Browse Jobs</a>
                             </li>
                         }
                     </ul>

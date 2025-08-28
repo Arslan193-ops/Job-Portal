@@ -125,7 +125,7 @@ namespace Job_Portal.Controllers
                     if (!JobExists(job.JobId)) return NotFound();
                     else throw;
                 }
-                return RedirectToAction(nameof(MyJobs));
+                return RedirectToAction("EmployerDashBoard","Users");
             }
             return View(job);
         }
